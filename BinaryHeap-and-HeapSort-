@@ -10,12 +10,11 @@ class BinaryHeap {
   explicit BinaryHeap(unsigned int size_);
   ~BinaryHeap();
 
-  int Parent_index(int index);
+  int ParentIndex(int index);
   int LeftChildIndex(int index);
   int RightChildIndex(int index);
 
-  void ShiftUp(int index);
-  void ShiftDown(int index);
+  int Size(); //Number of items in the queue
 
   void Insert(int value);
   int ExtractMax();
@@ -26,6 +25,9 @@ class BinaryHeap {
  private:
   int size;
   std::vector<int> elements;
+
+  void ShiftUp(int index);
+  void ShiftDown(int index);
 };
 
 BinaryHeap::BinaryHeap(unsigned int size_) {
@@ -38,7 +40,7 @@ BinaryHeap::~BinaryHeap() {
   size = 0;
 }
 
-int BinaryHeap::Parent_index(int index) {
+int BinaryHeap::ParentIndex(int index) {
   return (index - 1) / 2;
 }
 
@@ -51,9 +53,9 @@ int BinaryHeap::LeftChildIndex(int index) {
 }
 
 void BinaryHeap::ShiftUp(int index) {
-  while (index > 0 && elements[Parent_index(index)] < elements[index]) {
-    std::swap(elements[Parent_index(index)], elements[index]);
-    index = Parent_index(index);
+  while (index > 0 && elements[ParentIndex(index)] < elements[index]) {
+    std::swap(elements[ParentIndex(index)], elements[index]);
+    index = ParentIndex(index);
   }
 }
 
@@ -86,7 +88,7 @@ void BinaryHeap::Insert(int value) {
 }
 
 int BinaryHeap::ExtractMax() {
-  assert(size != 0 );
+  assert(size != 0);
   size--;
   int maximum = elements[0];
   elements[0] = elements[size];
@@ -113,6 +115,10 @@ void BinaryHeap::ChangePriority(int index, int new_priority) {
   }
 }
 
+int BinaryHeap::Size() {
+  return size;
+}
+
 int main() {
   unsigned int n;
   std::cin >> n;
@@ -121,6 +127,7 @@ int main() {
   for (auto &el: data) {
     std::cin >> el;
   }
+  
   sort_vec = data;
   std::sort(begin(sort_vec), end(sort_vec));
 
@@ -128,6 +135,7 @@ int main() {
   for (int i = 0; i < n; i++) {    //HeapSort with additional memory
     heap.Insert(data[i]);
   }
+
   for (int i = n - 1; i >= 0; i--) {
     data[i] = heap.ExtractMax();
   }
