@@ -1,2 +1,2 @@
 # Binary-Heap-and-HeapSort-
-Class Binary Heap and HeapSort with additional memory
+Class Int BinaryHeap and HeapSort with additional memory
