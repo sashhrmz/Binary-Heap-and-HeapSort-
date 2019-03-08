@@ -1,0 +1,137 @@
+#include <algorithm>
+#include <cassert>
+#include <iostream>
+#include <vector>
+
+const int INF = 1000000007;
+
+class BinaryHeap {
+ public:
+  explicit BinaryHeap(unsigned int size_);
+  ~BinaryHeap();
+
+  int Parent_index(int index);
+  int LeftChildIndex(int index);
+  int RightChildIndex(int index);
+
+  void ShiftUp(int index);
+  void ShiftDown(int index);
+
+  void Insert(int value);
+  int ExtractMax();
+
+  void Remove(int index); // Remove item by index
+  void ChangePriority(int index, int new_priority);
+
+ private:
+  int size;
+  std::vector<int> elements;
+};
+
+BinaryHeap::BinaryHeap(unsigned int size_) {
+  size = 0;
+  elements.resize(size_);
+}
+
+BinaryHeap::~BinaryHeap() {
+  elements.clear();
+  size = 0;
+}
+
+int BinaryHeap::Parent_index(int index) {
+  return (index - 1) / 2;
+}
+
+int BinaryHeap::RightChildIndex(int index) {
+  return 2 * index + 1;
+}
+
+int BinaryHeap::LeftChildIndex(int index) {
+  return 2 * index + 2;
+}
+
+void BinaryHeap::ShiftUp(int index) {
+  while (index > 0 && elements[Parent_index(index)] < elements[index]) {
+    std::swap(elements[Parent_index(index)], elements[index]);
+    index = Parent_index(index);
+  }
+}
+
+void BinaryHeap::ShiftDown(int index) {
+  while (true) {
+    int left = LeftChildIndex(index);
+    int right = RightChildIndex(index);
+    int deeper = index;
+    if (left < size && elements[left] > elements[deeper]) {
+      deeper = left;
+    }
+    if (right < size && elements[right] > elements[deeper]) {
+      deeper = right;
+    }
+    if (deeper == index) {
+      break;
+    }
+    int tempo = elements[index];
+    elements[index] = elements[deeper];
+    elements[deeper] = tempo;
+    index = deeper;
+  }
+}
+
+void BinaryHeap::Insert(int value) {
+  assert(size != elements.size());
+  size++;
+  elements[size - 1] = value;
+  ShiftUp(size - 1);
+}
+
+int BinaryHeap::ExtractMax() {
+  assert(size != 0 );
+  size--;
+  int maximum = elements[0];
+  elements[0] = elements[size];
+  elements.pop_back();
+  ShiftDown(0);
+  return maximum;
+}
+
+void BinaryHeap::Remove(int index) {
+  assert(0 <= index && index < size);
+  elements[index - 1] = INF;
+  ShiftUp(index - 1);
+  ExtractMax();
+}
+
+void BinaryHeap::ChangePriority(int index, int new_priority) {
+  assert(0 <= index && index < size);
+  int old_priority = elements[index - 1];
+  elements[index - 1] = new_priority;
+  if (new_priority > old_priority) {
+    ShiftUp(index - 1);
+  } else {
+    ShiftDown(index - 1);
+  }
+}
+
+int main() {
+  unsigned int n;
+  std::cin >> n;
+  std::vector<int> data(n);
+  std::vector<int> sort_vec;
+  for (auto &el: data) {
+    std::cin >> el;
+  }
+  sort_vec = data;
+  std::sort(begin(sort_vec), end(sort_vec));
+
+  BinaryHeap heap(n);
+  for (int i = 0; i < n; i++) {    //HeapSort
+    heap.Insert(data[i]);
+  }
+  for (int i = n - 1; i >= 0; i--) {
+    data[i] = heap.ExtractMax();
+  }
+
+  assert(data == sort_vec); // Check
+  return 0;
+}
